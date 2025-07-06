@@ -1,1 +1,1 @@
-from trapi.api import TRApi
+from .api import TRApi

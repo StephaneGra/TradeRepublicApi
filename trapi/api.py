@@ -28,7 +28,7 @@ class TRapiExcServerUnknownState(TRapiException):
 class TRApi:
     url = "https://api.traderepublic.com"
 
-    def __init__(self, number, pin, locale='en'):
+    def __init__(self, number, pin, locale= {"locale": "fr","platformId": "webtrading","platformVersion": "safari - 18.3.0","clientId": "app.traderepublic.com","clientVersion": "3.151.3"}):
         self.number = number
         self.pin = pin
         self.locale = locale
@@ -119,8 +119,8 @@ class TRApi:
     async def sub(self, payload_key, callback, **kwargs):
         if self.ws is None:
             self.ws = await websockets.connect("wss://api.traderepublic.com")
-            msg = json.dumps({"locale": self.locale})
-            await self.ws.send(f"connect 21 {msg}")
+            msg = json.dumps(self.locale)
+            await self.ws.send(f"connect 31 {msg}")
             response = await self.ws.recv()
 
             if not response == "connected":
@@ -653,10 +653,10 @@ class TRApi:
     async def timeline(self, after=None, callback=print):
         """timeline request"""
         return await self.sub(
-            "timeline",
-            payload={"type": "timeline", "after": after},
+            "timelineTransactions",
+            payload={"type": "timelineTransactions", "after": after},
             callback=callback,
-            key=f"timeline {after}",
+            key=f"timelineTransactions {after}",
         )
 
     async def timeline_actions(self, callback=print):
@@ -866,7 +866,7 @@ class TRApi:
 
 
 class TrBlockingApi(TRApi):
-    def __init__(self, number, pin, timeout=20.0, locale="en"):
+    def __init__(self, number, pin, timeout=100.0, locale="en"):
         self.timeout = timeout
         super().__init__(number, pin, locale)
 
